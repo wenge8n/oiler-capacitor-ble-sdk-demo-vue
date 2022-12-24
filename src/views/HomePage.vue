@@ -18,6 +18,8 @@
       </ion-header>
 
       <ion-button @click="scan" @disabled="scanning" expand="block">Scan</ion-button>
+
+      <ion-button @click="connect" expand="block">Connect</ion-button>
       
       <ion-list>
         <ion-label v-for="device in results" :key="device.uuids">{{ device.localName }}</ion-label>
@@ -30,6 +32,7 @@
 <script lang="ts">
 import { IonContent, IonHeader, IonList, IonPage, IonRefresher, IonRefresherContent, IonTitle, IonToolbar } from '@ionic/vue';
 import { BleClient, ScanResult } from '@capacitor-community/bluetooth-le';
+import { OilerBluetoothLeService } from 'oiler-capacitor-ble-sdk';
 import MessageListItem from '@/components/MessageListItem.vue';
 import { defineComponent, ref, onMounted } from 'vue';
 import { getMessages } from '@/data/messages';
@@ -72,9 +75,17 @@ export default defineComponent({
       }
     }
 
+    const connect = async () => {
+      try {
+        await OilerBluetoothLeService.connect();
+      } catch (err) {
+        error.value = (err as Error).message
+      }
+    }
+
     onMounted(init)
 
-    return { results, scanning, error, scan };
+    return { results, scanning, error, scan, connect };
   },
   methods: {
     refresh: (ev: CustomEvent) => {
